@@ -28,17 +28,28 @@ export default async function handler(req, res) {
   // POST - guardar configuración
   // =============================
   if (req.method === "POST") {
-    let body = {};
+    let body = "";
+
+    // Leer el body MANUALMENTE (obligatorio en Vercel Serverless)
+    await new Promise((resolve) => {
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+      req.on("end", resolve);
+    });
 
     try {
-      body = await req.json();   // << Aquí está la corrección
-    } catch (e) {
-      console.error("Error parsing JSON:", e);
+      body = JSON.parse(body);
+    } catch (error) {
+      console.error("JSON inválido:", error);
       return res.status(400).json({ error: "Invalid JSON" });
     }
 
     const { theme, campaign, isAutomatic } = body;
-    const updateData = { lastUpdated: new Date() };
+
+    const updateData = {
+      lastUpdated: new Date(),
+    };
 
     if (theme !== undefined) updateData.activeTheme = theme;
     if (campaign !== undefined) updateData.activeCampaign = campaign;

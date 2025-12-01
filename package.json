@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "mongoose": "^9.0.0"
+    "mongodb": "^6.0.0"
   }
 }
+

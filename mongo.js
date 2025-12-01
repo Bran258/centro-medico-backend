@@ -12,10 +12,11 @@ export async function connectToDB() {
     const client = new MongoClient(process.env.MONGO_URI);
     cached.promise = client.connect().then((client) => ({
       client,
-      db: client.db("clinica"),
+      db: client.db("clinica")
     }));
   }
 
   cached.conn = await cached.promise;
   return cached.conn;
 }
+
