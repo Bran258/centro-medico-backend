@@ -1,0 +1,8 @@
+{
+  "name": "centro-medico-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "mongoose": "^9.0.0"
+  }
+}
