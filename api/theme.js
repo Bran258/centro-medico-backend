@@ -2,9 +2,11 @@ import { connectToDB } from "../mongo.js";
 
 export default async function handler(req, res) {
   const { db } = await connectToDB();
-
   const collection = db.collection("appconfig");
 
+  // =============================
+  // GET - obtener configuración
+  // =============================
   if (req.method === "GET") {
     let config = await collection.findOne({ configId: "global_theme" });
 
@@ -22,8 +24,20 @@ export default async function handler(req, res) {
     return res.status(200).json(config);
   }
 
+  // =============================
+  // POST - guardar configuración
+  // =============================
   if (req.method === "POST") {
-    const { theme, campaign, isAutomatic } = req.body;
+    let body = {};
+
+    try {
+      body = await req.json();   // << Aquí está la corrección
+    } catch (e) {
+      console.error("Error parsing JSON:", e);
+      return res.status(400).json({ error: "Invalid JSON" });
+    }
+
+    const { theme, campaign, isAutomatic } = body;
     const updateData = { lastUpdated: new Date() };
 
     if (theme !== undefined) updateData.activeTheme = theme;
@@ -41,3 +55,4 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Método no permitido" });
 }
+
