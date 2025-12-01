@@ -10,13 +10,15 @@ export async function connectToDB() {
 
   if (!cached.promise) {
     const client = new MongoClient(process.env.MONGO_URI);
+
     cached.promise = client.connect().then((client) => ({
       client,
-      db: client.db("clinica")
+      db: client.db("clinica"), // <--- tu base de datos
     }));
   }
 
   cached.conn = await cached.promise;
   return cached.conn;
 }
+
 

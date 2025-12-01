@@ -1,6 +1,16 @@
 import { connectToDB } from "../mongo.js";
 
 export default async function handler(req, res) {
+
+  // ====== CORS ======
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   const { db } = await connectToDB();
   const collection = db.collection("appconfig");
 
@@ -30,11 +40,9 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     let body = "";
 
-    // Leer el body MANUALMENTE (obligatorio en Vercel Serverless)
+    // Leer body manualmente (serverless)
     await new Promise((resolve) => {
-      req.on("data", (chunk) => {
-        body += chunk;
-      });
+      req.on("data", (chunk) => (body += chunk));
       req.on("end", resolve);
     });
 
@@ -46,10 +54,7 @@ export default async function handler(req, res) {
     }
 
     const { theme, campaign, isAutomatic } = body;
-
-    const updateData = {
-      lastUpdated: new Date(),
-    };
+    const updateData = { lastUpdated: new Date() };
 
     if (theme !== undefined) updateData.activeTheme = theme;
     if (campaign !== undefined) updateData.activeCampaign = campaign;
@@ -66,4 +71,3 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: "Método no permitido" });
 }
-
